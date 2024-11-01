@@ -7,7 +7,7 @@ Created on Sun Oct 27 22:18:06 2024
 
 import advectionSchemes as schemes
 
-class Parameters:
+class Parameters:   
     """ 
     """
     
@@ -20,7 +20,8 @@ class Model:
     """ 
     """
     
-    def __init__(self, grid, spatialScheme, dt, params=Parameters(), linear=False):
+    def __init__(self, grid, spatialScheme, params=Parameters(), linear=False, 
+                 dt=None):
         """ 
         """
         
@@ -30,9 +31,9 @@ class Model:
         self.linear = linear
         
         # Scheme information.
-        self.setSpatialScheme(spatialScheme)
+        self.setSpatialScheme(spatialScheme, dt)
         
-    def setSpatialScheme(self, scheme):
+    def setSpatialScheme(self, scheme, dt=None):
         
         if scheme == "upwind":
             self.spatialScheme = schemes.AdvectionDiffusion1D(
@@ -49,7 +50,7 @@ class Model:
         
         elif scheme == "implicit":
             self.spatialScheme = schemes.AdvectionDiffusionImplicit(
-                self.grid, self.params, linear=self.linear)
+                self.grid, dt, self.params, linear=self.linear)
         
     def step(self, dt):
         """ 

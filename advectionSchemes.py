@@ -68,12 +68,13 @@ class AdvectionDiffusionRK4(AdvectionDiffusion1D):
         k1 = self.rhs(phi)
         k2 = self.rhs(phi+0.5*dt*k1)
         k3 = self.rhs(phi+0.5*dt*k2)
-        k4 = self.rhs(phi+dt*k3) 
+        k4 = self.rhs(phi+dt*k3)
         
-        return (k1/6 + k2/3 + k3/3 + k4/6)
+        return (k1 + 2*k2 + 2*k3 + k4)/6
     
 class AdvectionDiffusionImplicit:
-    """ 
+    """
+    I don't think that this is working.
     """
     def __init__(self, grid, dt, params, linear=False):
         
