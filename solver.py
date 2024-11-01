@@ -30,6 +30,9 @@ class Solver:
         self.plotEveryNTimesteps = 1
         self.plotter = plt.defaultPlotter
         
+        # Functions that should be called each iteration stored here.
+        self.customEquations = {}
+        
     def run(self):
         
         # Initialise storage array.
@@ -43,6 +46,10 @@ class Solver:
             # Calculate new time step value.
             phi = self.model.step(self.dt)
                           
+            # Evaluate any functions added by user (e.g. energy)
+            for eqn in self.customEquations.values():
+                eqn["data"][i] = eqn["func"](self.model.grid)
+            
             if self.plotResults:
                 
                 if i % self.plotEveryNTimesteps == 0:
@@ -55,9 +62,16 @@ class Solver:
             if self.store:
                 self.history[i, ...] = self.model.grid.phi
                         
-    def setNewTimestep(self, dt, endtime):
+    def addCustomEquation(self, key, customEqn):
         """ 
-        """        
-        # Set new dt and calculate new nt.
-        self.dt = dt 
-        self.nt = int(np.ceil(endtime/dt))
+        """
+        data = np.zeros(shape=(self.nt+1,))    
+        data[0] = customEqn(self.model.grid)
+        
+        # Store in dict for easy accessing.
+        self.customEquations[key] = {"func": customEqn, "data": data}
+        
+    def getCustomData(self, key):
+        """ 
+        """
+        return self.customEquations[key]["data"]

@@ -39,8 +39,8 @@ def setupSolver(dt, endtime, scheme, grid, ic, icArgs, params=Parameters(),
     # Calculate the no. of time steps.
     nt = int(np.floor(endtime/dt))
     
-    # Recalculate dt for consistency.
-    dt = endtime/nt
+    # # Recalculate dt for consistency.
+    # dt = endtime/nt
     
     # Setup model and then solver.
     model = Model(grid, scheme, params, linear, dt)
@@ -53,10 +53,14 @@ def setupSolver(dt, endtime, scheme, grid, ic, icArgs, params=Parameters(),
 
 ### STABILITY STUFF ###
 
-def mass():
+def mass(phi, dx):
     """ 
     Should not increase ideally.
     """
+    return np.sum(phi)*dx
+
+def massCustom(grid):
+    return mass(grid.phi, grid.dx)
 
 ### CONVERGENCE STUFF ###
 

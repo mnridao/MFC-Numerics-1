@@ -7,6 +7,8 @@ Created on Sun Oct 27 22:18:06 2024
 
 import advectionSchemes as schemes
 
+debug=False
+
 class Parameters:   
     """ 
     """
@@ -55,7 +57,12 @@ class Model:
     def step(self, dt):
         """ 
         """
-        
+        if debug:
+            ci = self.params.mu*dt/self.grid.dx 
+            di = self.params.nu*dt/self.grid.dx**2
+            Pe=ci/di
+            print(f"{Pe=}, \t{ci=}, \t{di=}\t, dx={self.grid.dx}, \tdt={dt}")
+            
         if self.spatialScheme.explicit:
             
             # Step forward in time (only doing forward euler here).
