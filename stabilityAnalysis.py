@@ -15,24 +15,24 @@ if __name__ == "__main__":
     ## Check stability for linear case ##
     
     ######### USER INPUT HERE #########
-    c = 0.4
-    d = 0.3
+    c = 0.5
+    d = 0.5
     u = 1
-    # nu = 0.02
-    dx = 0.01
+    nu = 0.02
+    # dx = 0.01
     
-    # scheme = "upwind"
-    scheme = "centredDifference"
-    endtime=10
-    plotEveryIteration=True
-    plotEveryNTimesteps=5
+    scheme = "upwind"
+    # scheme = "centredDifference"
+    endtime=100
+    plotEveryIteration=False
+    plotEveryNTimesteps=1
     
     ###################################
     
     # Stability stuff.
     Pe = c/d
-    # dx = Pe*nu/u
-    nu = dx*u/Pe
+    dx = Pe*nu/u
+    # nu = dx*u/Pe
     dt = c*dx/u
     
     # Generate grid.
@@ -40,8 +40,8 @@ if __name__ == "__main__":
     dx = grid.dx
                     
     # Initial condition.
-    ic = helpers.smoothWave
-    icArgs = (grid.xbounds[1], )
+    ic = helpers.piecewiseWave
+    icArgs = ()
     
     # Setup solver.
     params = helpers.setupParameters(nu=nu, mu=u)
@@ -49,7 +49,7 @@ if __name__ == "__main__":
                                  ic=ic, icArgs=icArgs, 
                                  params=params, linear=True,
                                  plotResults=plotEveryIteration, plotEveryN=plotEveryNTimesteps)
-    
+            
     # # Add mass custom equation.
     # solver.addCustomEquation("mass", helpers.massCustom)
     

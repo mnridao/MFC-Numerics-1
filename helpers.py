@@ -37,10 +37,10 @@ def setupSolver(dt, endtime, scheme, grid, ic, icArgs, params=Parameters(),
     """ 
     """
     # Calculate the no. of time steps.
-    nt = int(np.floor(endtime/dt))
+    nt = int(np.ceil(endtime/dt))
     
-    # # Recalculate dt for consistency.
-    # dt = endtime/nt
+    # Recalculate dt for consistency.
+    dt = endtime/nt
     
     # Setup model and then solver.
     model = Model(grid, scheme, params, linear, dt)
@@ -92,3 +92,10 @@ def smoothWave(X, xL):
     """ 
     """
     return 0.5*(1-np.cos(2*np.pi*(X/xL)))
+
+def piecewiseWave(X):
+    a = 1
+    b = 5
+    
+    smoothWave = lambda x, a, b : 0.5 * (1 - np.cos(2*np.pi * ((x - a) / (b - a))))
+    return np.array([0. if x <= a or x > b else smoothWave(x, a, b) for x in X])

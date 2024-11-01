@@ -208,4 +208,4 @@ def centredDifferenceD2Periodic(j, grid):
     """ 
     """
     
-    return 0.5*(grid.phi[(j+1)%grid.nx]-2*grid.phi[j]+grid.phi[(j-1)%grid.nx])/grid.dx
+    return (grid.phi[(j+1)%grid.nx]-2*grid.phi[j]+grid.phi[(j-1)%grid.nx])/grid.dx**2
