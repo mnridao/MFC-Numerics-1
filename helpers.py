@@ -60,7 +60,10 @@ def mass(phi, dx):
     return np.sum(phi)*dx
 
 def massCustom(grid):
-    return mass(grid.phi, grid.dx)
+    return np.abs(mass(grid.phi, grid.dx))
+
+def averagePhi(grid):
+    return np.mean(grid.phi)
 
 ### CONVERGENCE STUFF ###
 
@@ -94,8 +97,9 @@ def smoothWave(X, xL):
     return 0.5*(1-np.cos(2*np.pi*(X/xL)))
 
 def piecewiseWave(X):
-    a = 1
-    b = 5
+    x0, xL = X[0], X[-1]
+    a = 0.1*(xL-x0)
+    b = 0.5*(xL-x0)
     
     smoothWave = lambda x, a, b : 0.5 * (1 - np.cos(2*np.pi * ((x - a) / (b - a))))
     return np.array([0. if x <= a or x > b else smoothWave(x, a, b) for x in X])
