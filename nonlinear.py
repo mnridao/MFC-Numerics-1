@@ -8,9 +8,6 @@ Created on Sat Nov  2 01:00:06 2024
 import helpers
 import plotters
 
-import numpy as np
-import matplotlib.pyplot as plt
-
 def generateSolutionPlots():
     """ 
     """
@@ -28,8 +25,6 @@ def generateSolutionPlots():
     endtime=12
     solver = helpers.setupSolver(dt=0.001, endtime=endtime, scheme="upwind", grid=grid, 
                                  ic=ic, icArgs=icArgs, linear=False)
-    solver.plotResults=False
-    solver.plotEveryNTimesteps=10
     solver.store=True
     solver.run()
     
