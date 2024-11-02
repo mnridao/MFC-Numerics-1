@@ -106,7 +106,7 @@ def plotMasses(solvers, labels, figname, saveFig):
         plt.tight_layout()
         plt.savefig(figname)
     
-def plotErrors(errs, dxs, schemes, grid, figname, saveFig):
+def plotErrors0ld(errs, dxs, schemes, grid, figname, saveFig):
     """ 
     """
     
@@ -124,7 +124,31 @@ def plotErrors(errs, dxs, schemes, grid, figname, saveFig):
     if saveFig:
         plt.tight_layout()
         plt.savefig(figname)
+    
+def plotErrors(errs, dxs, labels, orderLine, figname="", saveFig=False):
+    """ 
+    """
+    
+    plt.figure()
+    for i, err in enumerate(errs):
+        plt.plot(dxs, err, '-o', label=f"c={labels[i]}")
+    
+    # Plot order line.
+    x, y, order = orderLine
+    plt.plot(x, y, 'k--', label=order)
         
+    plt.yscale("log")   
+    plt.xscale("log")
+    plt.grid(which="both")
+    plt.legend()
+    plt.xlabel(r"$\Delta x$")
+    plt.ylabel(r"$l_2$ error")
+    plt.xlim([dxs[-1], dxs[0]])
+    
+    if saveFig:
+        plt.tight_layout()
+        plt.savefig(figname)
+    
 def plotAmplifcationFactors(cs, ds, maxAs, cases, scheme, 
                             figname="", saveFig=False):
     """ 
@@ -149,6 +173,45 @@ def plotAmplifcationFactors(cs, ds, maxAs, cases, scheme,
     plt.xlim([ds[0], ds[-1]])
     plt.ylim([cs[0], cs[-1]])
     plt.title(scheme)
+    
+    if saveFig:
+        plt.tight_layout()
+        plt.savefig(figname)
+        
+def plotSolutionFancy(grid, t, ic, icArgs, figname="", saveFig=False):
+    
+    # Initial condition
+    phi0 = ic(grid.X, *icArgs)
+    
+    plt.figure()
+    plt.plot(grid.X, phi0, "k--", label="IC")
+    plt.plot(grid.X, grid.phi, label="numerical")
+    
+    plt.text(8, 0.9, f"t={t:.2f} s")
+    plt.xlim(grid.xbounds)
+    plt.grid(which="both")
+    plt.ylim([-0.1, 1.1])
+    plt.legend()
+    plt.xlabel("X")
+    plt.ylabel("phi")
+    
+    if saveFig:
+        plt.tight_layout()
+        plt.savefig(figname)
+
+def plotSolutionVeryFancy(solver, figname="", saveFig=False):
+    
+    # Plot the solution with time.
+    t = np.arange(0, solver.dt*(solver.nt+1), solver.dt)
+    XS, YS = np.meshgrid(solver.model.grid.X, t)
+    
+    plt.figure()
+    plt.contourf(XS, YS, solver.history)
+    cbar = plt.colorbar()
+    cbar.set_label(r"$\phi$")
+    
+    plt.xlabel("X [m]")
+    plt.ylabel("Time [s]")
     
     if saveFig:
         plt.tight_layout()

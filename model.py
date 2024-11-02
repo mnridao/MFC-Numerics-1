@@ -57,12 +57,6 @@ class Model:
     def step(self, dt):
         """ 
         """
-        if debug:
-            ci = self.params.mu*dt/self.grid.dx 
-            di = self.params.nu*dt/self.grid.dx**2
-            Pe=ci/di
-            print(f"{Pe=}, \t{ci=}, \t{di=}\t, dx={self.grid.dx}, \tdt={dt}")
-            
         if self.spatialScheme.explicit:
             
             # Step forward in time (only doing forward euler here).
@@ -73,5 +67,15 @@ class Model:
             # Solve a matrix equation.
             self.grid.phi = self.spatialScheme.solve(self.grid.phi, dt)
         
+        if debug:
+            if self.linear:
+                ci = self.params.mu*dt/self.grid.dx 
+                di = self.params.nu*dt/self.grid.dx**2
+            else:
+                ci = self.grid.phi.max()*dt/self.grid.dx 
+                di = self.params.nu*dt/self.grid.dx**2
+            print(f"Pe{ci/di}, \t{ci=}, \t{di=}, \tu={self.grid.phi.max()}",)
+            # print(f"c+2d={ci+2*di}")
+            
         return self.grid.phi
     

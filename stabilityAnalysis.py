@@ -71,7 +71,7 @@ def runStabilityDemo(cases, scheme, ic, icArgs, endtime, ybounds, figname, saveF
     
     return grids, labels
     
-def runMassAnalysis(cases, scheme, ic, icArgs, endtime, figname, saveFig):
+def runMassAnalysis(cases, scheme, ic, icArgs, endtime, figname, saveFig, plot=True):
     """ 
     """
     
@@ -88,7 +88,8 @@ def runMassAnalysis(cases, scheme, ic, icArgs, endtime, figname, saveFig):
         labels.append(f"c={c}, d={d}")
     
     # Plot the mass evolution.
-    plotters.plotMasses(solvers, labels, figname, saveFig)
+    if plot:
+        plotters.plotMasses(solvers, labels, figname, saveFig)
     
     return solvers, labels
     
@@ -126,10 +127,10 @@ def runStabilityExperiment():
     # Mass evolution for first two cases of centred difference (different endtimes).
     sols1, labels1 = runMassAnalysis(casesCentred[:-1], "centredDifference", 
                                      ic, icArgs, endtime=150, 
-                                     figname="", saveFig=False)
+                                     figname="", saveFig=False, plot=False)
     sols2, labels2 = runMassAnalysis([casesCentred[-1]], "centredDifference", 
                                      ic, icArgs, endtime=10, 
-                                     figname="", saveFig=False)
+                                     figname="", saveFig=False, plot=False)
     
     sols = sols2 + sols1[::-1]
     labels = labels2 + labels1[::-1]

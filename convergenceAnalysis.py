@@ -8,24 +8,30 @@ Created on Sun Oct 27 23:33:31 2024
 import numpy as np
 import matplotlib.pyplot as plt
 
-from grids import Grid1D
-from model import Model, Parameters
-from solver import Solver
 from referenceSolution import ReferenceSolution
 import helpers
 import plotters
 
-def runDifferentResolutionsConstD():
+def runDifferentCourantNumbers(cs, nxs, endtime, scheme, 
+                               ic, icArgs=(), debug=False):
     """ 
     """
-    err = np.zeros_like(nxs)
-    for i, nx in enumerate(nxs):
-        pass
     
-    return err
+    # Iterate over different initial Courant number options.
+    errs = np.zeros(shape=(len(cs), len(nxs)))
+    for i, c in enumerate(cs):
+        
+        # Find initial umax (1 from initial condition).
+        u0max=1
+        
+        errs[i, :] = runDifferentResolutionsConstC(nxs, c, u0max, endtime, scheme, 
+                                                   helpers.setupParameters(), 
+                                                   ic, icArgs, debug=debug)
+    
+    return errs
 
-def runDifferentResolutionsConstC(nxs, c, u0max, endtime, scheme, params, ic, icArgs=(), 
-                                  debug=False):
+def runDifferentResolutionsConstC(nxs, c, u0max, endtime, scheme, params, 
+                                  ic, icArgs=(), debug=False):
     """ 
     """
     err = np.zeros_like(nxs, dtype=np.float64)
@@ -37,94 +43,87 @@ def runDifferentResolutionsConstC(nxs, c, u0max, endtime, scheme, params, ic, ic
         nt = int(endtime/dt)
         
         # Calculate error.
-        err[i] = runResolution(dx, nx, dt, nt, endtime, ic, icArgs, debug=debug)
+        err[i] = runResolution(dx, nx, dt, nt, endtime, scheme, ic, icArgs, debug=debug)
             
     return err
 
-def runResolution(dx, nx, dt, nt, endtime, ic, icArgs, debug=False):
+def runResolution(dx, nx, dt, nt, endtime, scheme, ic, icArgs, debug=False):
     """ 
     """
     
-    print(f"c={u0max*dt/dx}, \tdt={dt}, \t dx={dx}, \t nt={nt}, \t nx={nx}, \tnt={nt}, \t, nt*dt={nt*dt}")
-    
-    # Update the grid.
-    grid = Grid1D(xbounds, nx)
-    model = Model(grid, scheme, params, dt=dt)
-    model.grid.phi = ic(grid.X, *icArgs)
+    print(f"c={1*dt/dx}, \td={0.006*dt/dx**2}, \tdt={dt}, \t dx={dx}, \t nt={nt}, \t nx={nx}, \tnt={nt}, \t, nt*dt={nt*dt}")
+        
+    # Update the grid and solver.
+    grid = helpers.setupGrid(x0=0, xL=10, dx=dx)
+    solver = helpers.setupSolver(dt, endtime=endtime, scheme=scheme, grid=grid, 
+                                 ic=ic, icArgs=icArgs, linear=False)
     
     # Run the analytic solution.
-    sol = ReferenceSolution(params, grid, endtime, nt)
-    sol.evaluate(model.grid.phi)
+    sol = ReferenceSolution(solver.model.params, grid, endtime, nt)
+    sol.evaluate(solver.model.grid.phi)
     
-    # Update the solver.
-    solver = Solver(model, dt, nt)
+    # Run the solver.
     solver.run()
     
     # Plot the last iteration.
     if debug:
-        plt.plot(grid.X, model.grid.phi)
-        plt.plot(grid.X, sol.phi[:, -1], 'k--')
+        model = solver.model 
+        plt.plot(model.grid.X, model.grid.phi)
+        plt.plot(model.grid.X, sol.phi[:, -1], 'k--')
         plt.ylim([-0.1, 1.1])
-        plt.xlim(grid.xbounds)
+        plt.xlim(model.grid.xbounds)
         plt.grid()
         plt.show(), plt.close()
     
     return helpers.l2(grid.phi, sol.phi[:, -1], grid.dx)
 
-if __name__ == "__main__":
+def calculateOrders(dxs, errs):
     
-    c = 0.5  # Initial Courant no.
-    nxs = [10, 20, 40, 80, 160]
+    n = np.zeros_like(dxs, dtype=np.float64)
+    for i, err in enumerate(errs):
+        ni, _ = np.polyfit(np.log(dxs), np.log(err), 1)
+        n[i] = ni 
+    return n
+
+def displayOrders(n, cs, scheme):
     
-    endtime = 0.1
-    err = np.zeros(shape=len(nxs))
-    dts = []
+    print(scheme)
+    for (ni, c) in zip(n, cs):
+        print(f"{c=}, \tn={ni}")
+
+def runConvergenceExperiment():
+    """ 
+    """
     
-    # Generate grid.
-    xbounds = [0, 10]
-    dx = 0.01
-    nx = int((xbounds[1] - xbounds[0])/dx)
-    grid = Grid1D(xbounds, nx)
-    
-    # Initial condition.
+    # Initial condition for this experiment.
     ic = helpers.smoothWave
-    icArgs=(grid.xbounds[1], )
+    icArgs = (10,)
     
-    # Find initial umax.
-    phi0 = ic(grid.X, *icArgs)
-    u0max = np.max(phi0)
-    plt.plot(grid.X, grid.phi)
-
-    # Problem Parameters.
-    params = Parameters()
-    params.nu = 0.02
-    # params.nu = 1e-6
+    # Courant no. ranges.
+    cs = [1, 0.5, 0.25]
+    nxs = [10, 20, 40, 80, 160]
+    endtime = 0.1 
     
-    schemes = ["upwind", "centredDifference", "rk4"]
-    schemes = ["upwind"]
-    errs = np.zeros(shape=(len(schemes), len(nxs)))
+    # Errors for upwind scheme compared to Fourier model.
+    errsU = runDifferentCourantNumbers(cs, nxs, endtime, "upwind", 
+                                       ic, icArgs, debug=False)
     
-    for i, scheme in enumerate(schemes):
-        print(f"### scheme: {scheme},\t {c=},\t Pe={helpers.peclet(u0max, params.nu, grid.dx)} ###\n")
-
-        errs[i, :] = runDifferentResolutionsConstC(nxs, c, u0max, endtime, 
-                                                   scheme, params, ic, icArgs,
-                                                   True)
-  
-    #%%
-    dxs = 1./np.array(nxs)
-    # plotters.plotErrors(errs, 1./np.array(nxs), schemes, grid, "", False)
+    # Plot the upwind errors.
+    x = 1e-2, 3e-2
+    y0 = 3e-4
+    y1 = y0*(x[1]/x[0])
+    orderLine = [x, [y0, y1], "first-order"]
     
     # Plot the error.
-    err = errs[0]
+    dxs = 1./np.array(nxs)
+    plotters.plotErrors(errsU, dxs, cs, orderLine, "upwindConvergence.png", saveFig=True)
     
-    plt.figure()
-    plt.plot(dxs, err, '-o')
-    plt.yscale("log")   
-    plt.xscale("log")
-    plt.grid(which="both")
-    plt.show(), plt.close()
+    # Calculate the order.
+    n = calculateOrders(dxs, errsU)
+    displayOrders(n, cs, "upwind")
     
-    # Calculate experimental order of convergence.
-    n, _ = np.polyfit(np.log(dxs), np.log(err), 1)
-    print(n)
+    # Centred difference not working.
+    
+if __name__ == "__main__":
+    
+    runConvergenceExperiment()
