@@ -11,21 +11,21 @@ from scipy.integrate import odeint
 class ReferenceSolution:
     """
     Solves the 1D Burgers' equation using the FFT for spatial derivatives.
-    Equation: ∂u/∂t + μ * u * ∂u/∂x = ν * ∂²u/∂x²
     """
 
     def __init__(self, params, grid, endtime, nt):
         """
         """
         self.params = params
-        self.k = 2 * np.pi * np.fft.fftfreq(grid.nx, d=grid.dx)  # Wavenumber discretization
-        self.T = np.linspace(0, endtime, nt)  # Time array
-        self.phi = None  # Placeholder for the solution to be computed
+        self.k = 2 * np.pi * np.fft.fftfreq(grid.nx, d=grid.dx)
+        self.T = np.linspace(0, endtime, nt)
+        self.phi = None
 
     def evaluate(self, phi0):
         """
         """
         args = (self.k, self.params.mu, self.params.nu)
+        
         # Solve the system using odeint and transpose to shape (nt, nx)
         self.phi = odeint(self.burgerSystem, phi0, self.T, args=args, mxstep=5000).T
 
