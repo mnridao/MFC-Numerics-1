@@ -1,7 +1,7 @@
 # Assignment 1 for MFC Numerics
 Solver for the viscous Burgers' equation
 
-![solution](solutionEvolution.png)
+<img src="solutionEvolution.png" alt="solution" width="500"/>
 
 ## Dependencies
 * numpy (v2.1.1)
