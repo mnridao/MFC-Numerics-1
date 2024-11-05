@@ -10,15 +10,21 @@ import numpy as np
 import plotters
 
 def upwindAmp(kdx, c, d):
+    """ 
+    Amplification factor for scheme with upwind advection discretisation."""
     A = 1 + (2*d+c)*(np.cos(kdx) - 1) - 1j*c*np.sin(kdx)
     return A*A.conjugate()
 
 def centredAmp(kdx, c, d):
+    """ 
+    Amplification factor for scheme with centred difference advection 
+    discretisation."""
     A = 1 + 2*d*(np.cos(kdx)-1) - 1j*c*np.sin(kdx)
     return A*A.conjugate()
 
 def findMaxAs(cs, ds, kdxs, amp):
     """ 
+    Finds max A in range.
     """
     
     maxAs = np.zeros(shape=(cs.shape[0], ds.shape[0]))

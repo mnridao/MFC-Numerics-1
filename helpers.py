@@ -22,8 +22,6 @@ def setupParameters(nu=None, mu=None):
     return params
 
 def setupGrid(x0, xL, dx):
-    """ 
-    """
     # Calculate no. of grid points.
     nx = int((xL - x0)/dx)
     
@@ -34,8 +32,7 @@ def setupGrid(x0, xL, dx):
     
 def setupSolver(dt, endtime, scheme, grid, ic, icArgs, params=Parameters(), 
                 linear=False, plotResults=False, plotEveryN=1):
-    """ 
-    """
+
     # Calculate the no. of time steps.
     nt = int(np.ceil(endtime/dt))
     
@@ -69,12 +66,14 @@ def averagePhi(grid):
 
 def l2(phi, phiA, dx):
     """ 
+    L2 error norm between numerical (phi) and reference (phiA) solutions.
     """
     return (np.sqrt(np.sum(dx*np.power(phi - phiA, 2)))/
             np.sqrt(np.sum(dx*np.power(phiA, 2))))
 
 def order(err, dxs):
     """ 
+    Caluclates spatial order of accuarcy.
     """
     n, _ = np.polyfit(np.log(dxs), np.log(err), 1)
     return n

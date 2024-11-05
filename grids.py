@@ -9,10 +9,18 @@ import numpy as np
 
 class Grid1D:
     """ 
+    Class responsible for generating the grid.
     """
     
     def __init__(self, xbounds, nx):
-        """ """
+        """ 
+        Inputs
+        ------
+        xbounds: list
+                 Contains lower and upper bounds of the domain
+        nx     : int
+                 Number if grid points in the domain.
+        """
         
         self.nx = nx
         self.xbounds = xbounds
@@ -22,6 +30,7 @@ class Grid1D:
     
     def setupGrid(self):
         """ 
+        Generates the grid (assumes periodic boundary conditions)
         """
         
         # Check for periodic boundary conditions.
@@ -39,17 +48,20 @@ class Grid1D:
     
     def resetFields(self):
         """ 
+        Reset the prognostic variable values.
         """
         self.phi = np.zeros_like(self.X)
     
     def setNewGridBounds(self, xbounds):
         """ 
+        Regenerates the grid based on new domain bounds.
         """
         self.xbounds = xbounds 
         self.setupGrid()
     
     def setNewGridSpacing(self, dx):
         """ 
+        Reset the grid spacing (recalculates nx)
         """
         self.dx = dx 
         self.nx = int((self.xbounds[1] - self.xbounds[0]) / self.dx)

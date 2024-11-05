@@ -11,6 +11,7 @@ debug=False
 
 class Parameters:   
     """ 
+    Stores the physical parameters of the viscous Burgers' equation.
     """
     
     def __init__(self):
@@ -20,11 +21,28 @@ class Parameters:
         
 class Model:
     """ 
+    Class responsible for specifying:
+        - Spatial discretisation 
+        - Grid information
+        - Physical parameters of the PDE
+        
+    Built in forward-in-time temporal discretisation and centred-difference 
+    approximation for diffusion term.
     """
     
     def __init__(self, grid, spatialScheme, params=Parameters(), linear=False, 
                  dt=None):
         """ 
+        Inputs
+        ------
+        grid : Grid1D object 
+               Class with grid information.
+        spatialScheme : string
+                        which (advection) scheme to use.
+        params : Parameters object 
+                 Contains physical parameters of the PDE 
+        linear : bool 
+                 Flag for whether PDE is linear/nonlinear
         """
         
         # Useful things to know.
@@ -36,6 +54,9 @@ class Model:
         self.setSpatialScheme(spatialScheme, dt)
         
     def setSpatialScheme(self, scheme, dt=None):
+        """ 
+        Specify which advection scheme to use.
+        """
         
         if scheme == "upwind":
             self.spatialScheme = schemes.AdvectionDiffusion1D(
@@ -56,6 +77,7 @@ class Model:
         
     def step(self, dt):
         """ 
+        Step the model forward in time.
         """
         if self.spatialScheme.explicit:
             

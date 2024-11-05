@@ -11,10 +11,20 @@ import plotters as plt
 
 class Solver:
     """ 
+    Class that runs the simulation.
     """
     
     def __init__(self, model, dt, nt):
-        """ """
+        """ 
+        Inputs
+        -------
+        model : Model class
+                Model to be iterated.
+        dt    : float 
+                Time-step 
+        nt    : int 
+                Number of time-steps
+        """
         
         # Solver parameters.
         self.model   = model
@@ -34,6 +44,9 @@ class Solver:
         self.customEquations = {}
         
     def run(self):
+        """ 
+        Run the simulation.
+        """
         
         # Initialise storage array.
         if self.store:
@@ -64,6 +77,13 @@ class Solver:
                         
     def addCustomEquation(self, key, customEqn):
         """ 
+        Add a function to be evaluated every time-step (must take Grid1D 
+        object as argument).
+        
+        Inputs
+        -------
+        key : string 
+        customEqn: callable function that takes Grid1D object as argument
         """
         data = np.zeros(shape=(self.nt+1,))    
         data[0] = customEqn(self.model.grid)
@@ -73,5 +93,6 @@ class Solver:
         
     def getCustomData(self, key):
         """ 
+        Retrieve data of appropriate custom equation.
         """
         return self.customEquations[key]["data"]
