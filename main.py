@@ -15,11 +15,11 @@ if __name__ == "__main__":
     # Plot some nice non-linear solutions.
     generateSolutionPlots()
     
-    # # Find numerical stability constraints for each advection scheme.
-    # runNumericalStabilityConstrants()
+    # Find numerical stability constraints for each advection scheme.
+    runNumericalStabilityConstrants()
     
-    # # Perform a stability analysis for each advection scheme.
-    # runStabilityExperiment()
+    # Perform a stability analysis for each advection scheme.
+    runStabilityExperiment()
     
-    # # Perform an order of convergence analysis for each scheme.
-    # runConvergenceExperiment()
+    # Perform an order of convergence analysis for each scheme.
+    runConvergenceExperiment()
