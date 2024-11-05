@@ -204,6 +204,7 @@ def centredDifferenceD1PeriodicOld(j, grid):
 
 ### DIFFUSION DISCRETISATION ### 
 
+
 def centredDifferenceD2Periodic(j, grid):
     """ 
     """

@@ -51,7 +51,9 @@ def runResolution(dx, nx, dt, nt, endtime, scheme, ic, icArgs, debug=False):
     """ 
     """
     
-    print(f"c={1*dt/dx}, \td={0.006*dt/dx**2}, \tdt={dt}, \t dx={dx}, \t nt={nt}, \t nx={nx}, \tnt={nt}, \t, nt*dt={nt*dt}")
+    c = 1*dt/dx 
+    d = 0.006*dt/dx**2
+    print(f"c={c}, \td={d}, \tPe={c/d} \tdt={dt}, \t dx={dx}, \t nt={nt}, \t nx={nx}, \tnt={nt}, \t, nt*dt={nt*dt}")
         
     # Update the grid and solver.
     grid = helpers.setupGrid(x0=0, xL=10, dx=dx)
@@ -59,7 +61,7 @@ def runResolution(dx, nx, dt, nt, endtime, scheme, ic, icArgs, debug=False):
                                  ic=ic, icArgs=icArgs, linear=False)
     
     # Run the analytic solution.
-    sol = ReferenceSolution(solver.model.params, grid, endtime, nt)
+    sol = ReferenceSolution(solver.model.params, grid, endtime, nt=500)
     sol.evaluate(solver.model.grid.phi)
     
     # Run the solver.
